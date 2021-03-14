@@ -1,4 +1,4 @@
-from yolov5processor.infer import ExecuteInference 
+from yoloprocessor import ExecuteInference 
 import cv2
 
 # Non operational
@@ -17,11 +17,13 @@ def mark_prediction(pred, image, model):
 
         print(f'Detection: {i}, {det}')   
 
-        xmin, ymin, xmax, ymax = from_yolo_to_opencv(det['points'][0].item(),det['points'][1].item(),det['points'][2].item(),det['points'][3].item())
+        #if type(det['points'][0] == Tensor)
+
+        xmin, ymin, xmax, ymax = from_yolo_to_opencv(det['points'][0],det['points'][1],det['points'][2],det['points'][3])
         
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 0, 255))
 
-        text_class = model.names[int(det['class'].item())]
+        text_class = det['class']
 
         cv2.putText(image, text_class, (xmin,ymin-5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)
 
@@ -73,9 +75,9 @@ img_size = 640
 weights = "yolov5s.pt"
 
 model = ExecuteInference(weight=weights, confidence=0.25, \
-            img_size=img_size, agnostic_nms=False, gpu=False, iou=0.5)
+            img_size=img_size, agnostic_nms=False, gpu=True, iou=0.5)
 
-run_for_image(model)
+run_for_video(model)
 
 
 
